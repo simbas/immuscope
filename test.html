@@ -1,0 +1,126 @@
+
+<html>
+<head></head>
+<body>
+  <script src="dist/index.iife.js"></script>
+
+
+  <h1>Immuscope BDD page</h1>
+
+    <button type="button" name="button" onclick="t.rewind()">rewind</button>
+    <button type="button" name="button" onclick="t.fastforward()">fastforward</button>
+
+  <h4>simple example, one bind, one scope, one mutation:</h4>
+  <div scope>
+    <script type="immuscope/state">{a:2}</script>
+    <script type="immuscope/mutation" name="addA">
+    function(nextState, howMany) {nextState.a = nextState.a + howMany; return nextState;}
+    </script>
+
+    <span bind expression="a"></span>
+    <button type="button" name="button" click expression="1 -> addA">addA</button>
+  </div>
+
+
+  <h4>complex example, multi scope, multi bind, multi mutation:</h4>
+  <div scope>
+    <script type="immuscope/state">{a:2}</script>
+    <script type="immuscope/mutation" name="addA">
+    function(nextState, howMany) {nextState.a = nextState.a + howMany; return nextState;}
+    </script>
+    bind on "a" <span bind expression="a"></span>
+    bind on "a*2" <span bind expression="a*2"></span>
+
+    <div scope>
+      <script type="immuscope/state">
+      {a:2}
+      </script>
+      bind on current scope "a" <span bind expression="a"></span>
+      <button type="button" name="button" click expression="1 -> addA">addA</button> should add 1 "a" on parent scope
+    </div>
+
+    <div scope>
+      <script type="immuscope/state">{a:2}</script>
+      <script type="immuscope/mutation" name="addA">
+      function(nextState, howMany) {nextState.a = nextState.a + howMany; return nextState;}
+      </script>
+      bind on current scope "a" <span bind expression="a"></span>
+      <button type="button" name="button" click expression="5 -> addA">addA</button>should add 5 "a" on current scope
+    </div>
+
+    <div scope>
+      <script type="immuscope/state">{a:2}</script>
+      <script type="immuscope/mutation" name="addA">
+      function(nextState, howMany) {nextState.a = nextState.a + howMany*2; return nextState;}
+      </script>
+      bind on current scope "a" <span bind expression="a"></span>
+      <button type="button" name="button" click expression="1 -> addA">addA</button> should add 2 "a" on current scope
+    </div>
+
+    <div scope><script type="immuscope/state">{}</script>
+      bind on parent scope "a" <span bind expression="a"></span>
+      <button type="button" name="button" click expression="1 -> addA">addA</button>should add 1 "a" on parent scope
+      <button type="button" name="button" click expression="a -> addA">addA</button>should add a "a" on parent scope
+      <button type="button" name="button" click expression="b.c -> addA">addB.C</button>should throw err
+    </div>
+  </div>
+
+
+  <h4>repeat:</h4>
+  <div scope>
+    <script type="immuscope/state">{array: [], a: 1}</script>
+    <script type="immuscope/mutation" name="push">function(state, date) {state.array.push({date: date}); return state;}</script>
+    <script type="immuscope/mutation" name="pop">function(state) {state.array.pop(); return state;}</script>
+    <script type="immuscope/mutation" name="delete">function(state, index) {state.array.splice(index, 1); return state;}</script>
+    <script type="immuscope/mutation" name="update">function(state, index) {state.array[index].date = (new Date()).getTime(); return state;}</script>
+    <script type="immuscope/mutation" name="addA">
+    function(nextState, howMany) {nextState.a = nextState.a + howMany; return nextState;}
+    </script>
+
+
+    bind on "a" : <span bind expression="a"></span>
+    <button type="button" name="button" click expression="(new Date()).getTime() -> push">push</button>
+    <button type="button" name="button" click expression="'' -> pop">pop</button>
+
+    <ul repeat expression="item of array">
+      <script type="immuscope/fragment">
+        `<li>
+            Date d'un item de l'array : <span bind expression="date"></span>
+            index: <span bind expression="$index"></span>
+            <button type="button" name="button" click expression="$index -> update">update</button>
+            <button type="button" name="button" click expression="$index -> delete">delete</button>
+        </li>
+        <li>
+            a : <span bind expression="a"></span>
+            <button type="button" name="button" click expression="1 -> addA">addA</button>
+            <input type="text" />
+        </li>`
+      </script>
+    </ul>
+  </div>
+
+
+  <script>var t = new T(document.body);</script>
+  green = scope / blue = lenses / red = actions
+  <style>
+  [scope] {
+    border: 1px solid green;
+    padding: 5px;
+    margin: 5px;
+  }
+  [bind], [repeat] {
+    border: 1px solid blue;
+    padding: 5px;
+    margin: 5px;
+  }
+  [click] {
+    border: 1px solid red;
+    padding: 5px;
+    margin: 5px;
+  }
+  li {
+    margin: 20px;
+  }
+  </style>
+</body>
+</html>
