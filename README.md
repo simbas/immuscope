@@ -8,11 +8,8 @@
 
 >
 
-### roadmap
 
-- Form with unsync store
-- T.debug
-- T.register scope|lens|action
+Immuscope is version 0 and should not be used for the moment.
 
 ### How to Install
 
